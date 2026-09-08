@@ -103,23 +103,6 @@ Personal Business-Card Webpage/Card web
 
 ⸻
 
-🔮 后续计划
-
-未来可以继续加入：
-
-* [ ]	GitHub 个人主页链接
-* [ ]	邮箱快捷跳转
-* [ ]	社交媒体图标
-* [ ]	响应式手机端适配
-* [ ]	深色模式
-* [ ]	更多卡片动画效果
-* [ ]	在线 Demo
-* [ ]	GitHub Pages 部署
-* [ ]	中英文切换
-* [ ]	个人项目展示区域
-
-⸻
-
 👨‍💻 Author
 
 allan-qiu
