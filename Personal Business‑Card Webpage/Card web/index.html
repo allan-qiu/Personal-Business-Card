@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秋玖桉 · AI 应用开发工程师</title>
+    <!-- 引入外部样式表：结构与样式分离 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============================================
+         页面整体布局：
+         body 作为浅蓝渐变背景画布，
+         main 使用 Flex 布局让名片卡片在页面中水平垂直居中
+         ============================================ -->
+    <main class="page">
+
+        <!-- ============================================
+             名片卡片结构：
+             article 语义化标签表示一张独立完整的个人名片，
+             内部从上到下依次为：头像 → 姓名 → 职位 → 分隔线 → 联系方式
+             ============================================ -->
+        <article class="card">
+
+            <!-- 头像区域：外层容器负责渐变光环装饰，内部图片圆形裁剪 -->
+            <figure class="card__avatar">
+                <img src="avatar.jpg" alt="秋玖桉的个人头像" class="card__avatar-img">
+            </figure>
+
+            <!-- 姓名与职位区域：姓名为主视觉信息，职位为辅助信息 -->
+            <header class="card__identity">
+                <h1 class="card__name">秋玖桉</h1>
+                <p class="card__title">AI 应用开发工程师</p>
+            </header>
+
+            <!-- 装饰分隔线：分隔个人信息与联系方式，增强层级感 -->
+            <div class="card__divider" aria-hidden="true"></div>
+
+            <!-- ============================================
+                 联系方式区域：
+                 使用无序列表整齐排列各项联系方式，
+                 每项由图标 + 文字组成（联系方式为示例数据）
+                 ============================================ -->
+            <ul class="card__contacts">
+                <li class="contact-item">
+                    <span class="contact-item__icon" aria-hidden="true">✉</span>
+                    <span class="contact-item__text">qiujiuan.ai@example.com</span>
+                </li>
+                <li class="contact-item">
+                    <span class="contact-item__icon" aria-hidden="true">☎</span>
+                    <span class="contact-item__text">138-2024-6688</span>
+                </li>
+                <li class="contact-item">
+                    <span class="contact-item__icon" aria-hidden="true">⌂</span>
+                    <span class="contact-item__text">github.com/qiujiuan</span>
+                </li>
+            </ul>
+
+        </article>
+
+    </main>
+
+</body>
+</html>

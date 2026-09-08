@@ -1,0 +1,194 @@
+/* ============================================================
+   个人名片网页样式表
+   风格定位：简约 / 现代 / 精致 / AI 科技感 / 清新浅蓝色系
+   ============================================================ */
+
+/* ---------- 全局基础重置 ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* 统一盒模型，便于尺寸计算 */
+}
+
+/* ---------- CSS 变量：集中管理配色，便于后续修改 ----------
+   配色围绕头像中的浅蓝、冰蓝、白色展开 */
+:root {
+    --color-bg-top: #eaf4fd;        /* 背景渐变起始色：极浅天蓝 */
+    --color-bg-bottom: #dcebfa;     /* 背景渐变结束色：浅冰蓝 */
+    --color-card-bg: rgba(255, 255, 255, 0.82); /* 卡片半透明白色背景 */
+    --color-primary: #5b9bd9;       /* 主题浅蓝色：用于点缀与图标 */
+    --color-name: #2c3e50;          /* 姓名深色：高视觉权重 */
+    --color-title: #7a93ad;         /* 职位柔和灰蓝色 */
+    --color-contact: #5a6f85;       /* 联系方式文字颜色 */
+    --shadow-normal: 0 8px 24px rgba(91, 155, 217, 0.18);  /* 常态柔和阴影 */
+    --shadow-hover: 0 16px 40px rgba(91, 155, 217, 0.28);  /* 悬停增强阴影 */
+}
+
+/* ============================================================
+   页面整体布局：
+   使用 Flex 布局让名片卡片在视口中水平、垂直居中，
+   背景采用非常浅的蓝白渐变，突出中央卡片
+   ============================================================ */
+body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: linear-gradient(160deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
+}
+
+.page {
+    min-height: 100vh;              /* 占满整个视口高度 */
+    display: flex;
+    justify-content: center;        /* 水平居中 */
+    align-items: center;            /* 垂直居中 */
+    padding: 24px;                  /* 小屏幕下保留边距 */
+}
+
+/* ============================================================
+   名片卡片结构（阴影与圆角设计）：
+   - 12px 圆角 + 柔和阴影，营造轻微悬浮感与空间层次
+   - 半透明背景 + 背景模糊，体现现代 AI 科技质感
+   - 顶部一条极细的渐变高光线作为科技感点缀
+   ============================================================ */
+.card {
+    width: 340px;
+    padding: 48px 36px 40px;
+    text-align: center;
+    background: var(--color-card-bg);
+    backdrop-filter: blur(12px);            /* 毛玻璃柔光效果 */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7); /* 细腻的白色描边 */
+    border-radius: 12px;                    /* 卡片 12px 圆角 */
+    box-shadow: var(--shadow-normal);       /* 柔和自然阴影 */
+    position: relative;
+    overflow: hidden;
+
+    /* ---------- CSS 过渡效果 ----------
+       对位移与阴影使用平滑缓动，悬停动画柔和不夸张 */
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* 卡片顶部渐变高光线：轻微的 AI 科技感装饰 */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #a8cdf0 30%,
+        var(--color-primary) 50%,
+        #a8cdf0 70%,
+        transparent 100%);
+}
+
+/* ============================================================
+   鼠标悬停动画：
+   卡片轻微上浮 6px，同时阴影略微增强，
+   通过上方 transition 实现平滑柔和的过渡
+   ============================================================ */
+.card:hover {
+    transform: translateY(-6px);            /* 轻微向上浮动 */
+    box-shadow: var(--shadow-hover);        /* 阴影增强，形成悬浮反馈 */
+}
+
+/* ============================================================
+   头像样式：
+   - 外层 figure 负责圆形渐变光环装饰
+   - img 使用 border-radius: 50% 裁剪为标准圆形
+   - object-fit: cover 保证人物主体居中且图片不变形
+   ============================================================ */
+.card__avatar {
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 24px;                    /* 水平居中，与姓名留出间距 */
+    border-radius: 50%;
+    padding: 4px;                           /* 光环与头像之间的间隙 */
+    background: linear-gradient(135deg, #bfdcf7, var(--color-primary)); /* 渐变光环 */
+    box-shadow: 0 4px 16px rgba(91, 155, 217, 0.25); /* 头像柔和投影 */
+}
+
+.card__avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;                     /* 圆形裁剪 */
+    object-fit: cover;                      /* 填满圆形且不变形 */
+    object-position: center;                /* 人物主体居中 */
+    display: block;
+    border: 3px solid #ffffff;              /* 白色内边框，衔接光环 */
+
+    /* 头像悬停过渡：与卡片动画节奏保持一致 */
+    transition: transform 0.4s ease;
+}
+
+/* 悬停卡片时头像细微放大，保持克制的高级感 */
+.card:hover .card__avatar-img {
+    transform: scale(1.04);
+}
+
+/* ============================================================
+   姓名与职位排版：
+   - 姓名字号较大、字重高，作为卡片主视觉信息
+   - 职位位于姓名下方，采用柔和灰蓝色，弱化对比
+   ============================================================ */
+.card__name {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-name);
+    letter-spacing: 2px;                    /* 增加字距，更显精致 */
+    margin-bottom: 8px;
+}
+
+.card__title {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--color-title);
+    letter-spacing: 1px;
+}
+
+/* ---------- 装饰分隔线：渐变细线，划分信息层级 ---------- */
+.card__divider {
+    width: 56px;
+    height: 2px;
+    margin: 24px auto;
+    border-radius: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+/* ============================================================
+   联系方式区域：
+   使用列表纵向整齐排列，每行为「图标 + 文字」结构，
+   整体居中对齐，保持简洁清晰
+   ============================================================ */
+.card__contacts {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;                              /* 各联系方式之间的间距 */
+    align-items: center;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--color-contact);
+}
+
+/* 联系方式图标：圆形浅蓝底衬托，呼应整体色系 */
+.contact-item__icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(91, 155, 217, 0.12);   /* 半透明浅蓝底 */
+    color: var(--color-primary);
+    font-size: 14px;
+}
+
+.contact-item__text {
+    letter-spacing: 0.5px;
+}
