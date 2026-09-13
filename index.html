@@ -9,6 +9,9 @@
 </head>
 <body>
 
+    <!-- 轻量动态装饰画布，不参与交互或内容朗读 -->
+    <canvas class="ambient-canvas" aria-hidden="true"></canvas>
+
     <!-- ============================================
          页面整体布局：
          body 作为浅蓝渐变背景画布，
@@ -60,6 +63,155 @@
         </article>
 
     </main>
+
+    <script>
+        (() => {
+            const canvas = document.querySelector(".ambient-canvas");
+            const context = canvas.getContext("2d", { alpha: true });
+            const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+            const compactScreen = window.matchMedia("(max-width: 768px), (pointer: coarse)");
+            const petals = [];
+            const trails = [];
+            const petalColors = [
+                "rgba(255, 174, 194, 0.34)",
+                "rgba(255, 199, 211, 0.30)",
+                "rgba(244, 155, 184, 0.26)"
+            ];
+
+            let width = 0;
+            let height = 0;
+            let animationFrame = 0;
+            let previousTime = 0;
+            let lastTrailTime = 0;
+
+            const random = (min, max) => Math.random() * (max - min) + min;
+
+            function createPetal(fromTop = false) {
+                const size = random(4, 9);
+                return {
+                    x: random(0, width),
+                    y: fromTop ? random(-height * 0.25, -12) : random(-20, height),
+                    size,
+                    speedY: random(5, 13),
+                    drift: random(-4, 4),
+                    sway: random(8, 20),
+                    phase: random(0, Math.PI * 2),
+                    rotation: random(0, Math.PI * 2),
+                    spin: random(-0.18, 0.18),
+                    color: petalColors[Math.floor(Math.random() * petalColors.length)]
+                };
+            }
+
+            function resetCanvas() {
+                const ratio = Math.min(window.devicePixelRatio || 1, 1.75);
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = Math.round(width * ratio);
+                canvas.height = Math.round(height * ratio);
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+                context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                const density = compactScreen.matches ? 7 : Math.min(22, Math.max(12, Math.round(width * height / 70000)));
+                petals.length = 0;
+                trails.length = 0;
+                for (let index = 0; index < density; index += 1) {
+                    petals.push(createPetal());
+                }
+            }
+
+            function drawPetal(petal, opacity = 1) {
+                context.save();
+                context.translate(petal.x, petal.y);
+                context.rotate(petal.rotation);
+                context.scale(1, 0.72);
+                context.globalAlpha = opacity;
+                context.fillStyle = petal.color;
+                context.beginPath();
+                context.moveTo(0, -petal.size);
+                context.bezierCurveTo(petal.size, -petal.size * 0.45, petal.size, petal.size * 0.55, 0, petal.size);
+                context.bezierCurveTo(-petal.size, petal.size * 0.55, -petal.size, -petal.size * 0.45, 0, -petal.size);
+                context.fill();
+                context.restore();
+            }
+
+            function animate(time) {
+                if (reducedMotion.matches) return;
+
+                const delta = Math.min((time - previousTime) / 1000 || 0, 0.04);
+                previousTime = time;
+                context.clearRect(0, 0, width, height);
+
+                petals.forEach((petal) => {
+                    petal.phase += delta * 0.45;
+                    petal.y += petal.speedY * delta;
+                    petal.x += (petal.drift + Math.sin(petal.phase) * petal.sway) * delta;
+                    petal.rotation += petal.spin * delta;
+
+                    if (petal.y > height + 18 || petal.x < -30 || petal.x > width + 30) {
+                        Object.assign(petal, createPetal(true));
+                    }
+                    drawPetal(petal);
+                });
+
+                for (let index = trails.length - 1; index >= 0; index -= 1) {
+                    const particle = trails[index];
+                    particle.life -= delta / particle.duration;
+                    particle.x += particle.vx * delta;
+                    particle.y += particle.vy * delta;
+                    particle.rotation += particle.spin * delta;
+                    particle.size *= Math.pow(0.45, delta);
+
+                    if (particle.life <= 0) {
+                        trails.splice(index, 1);
+                    } else {
+                        drawPetal(particle, particle.life * 0.72);
+                    }
+                }
+
+                animationFrame = requestAnimationFrame(animate);
+            }
+
+            function startAnimation() {
+                cancelAnimationFrame(animationFrame);
+                context.clearRect(0, 0, width, height);
+                previousTime = performance.now();
+                if (!reducedMotion.matches && !document.hidden) {
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+
+            window.addEventListener("pointermove", (event) => {
+                if (compactScreen.matches || reducedMotion.matches || event.pointerType === "touch") return;
+                const now = performance.now();
+                if (now - lastTrailTime < 42 || trails.length >= 16) return;
+                lastTrailTime = now;
+                trails.push({
+                    x: event.clientX + random(-3, 3),
+                    y: event.clientY + random(-3, 3),
+                    size: random(2.2, 4.2),
+                    vx: random(-6, 6),
+                    vy: random(-10, -3),
+                    rotation: random(0, Math.PI * 2),
+                    spin: random(-1.1, 1.1),
+                    duration: random(0.7, 1.05),
+                    life: 1,
+                    color: petalColors[Math.floor(Math.random() * petalColors.length)]
+                });
+            }, { passive: true });
+
+            window.addEventListener("resize", resetCanvas, { passive: true });
+            document.addEventListener("visibilitychange", startAnimation);
+            reducedMotion.addEventListener("change", startAnimation);
+            compactScreen.addEventListener("change", () => {
+                resetCanvas();
+                startAnimation();
+            });
+
+            resetCanvas();
+            startAnimation();
+        })();
+    </script>
 
 </body>
 </html>

@@ -32,6 +32,20 @@
 body {
     font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
     background: linear-gradient(160deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ---------- 低干扰动态背景画布 ---------- */
+.ambient-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .page {
@@ -40,6 +54,8 @@ body {
     justify-content: center;        /* 水平居中 */
     align-items: center;            /* 垂直居中 */
     padding: 24px;                  /* 小屏幕下保留边距 */
+    position: relative;
+    z-index: 1;                     /* 内容始终位于装饰花瓣上方 */
 }
 
 /* ============================================================
@@ -191,4 +207,16 @@ body {
 
 .contact-item__text {
     letter-spacing: 0.5px;
+}
+
+/* 尊重系统的减少动态效果设置，完整禁用装饰动画 */
+@media (prefers-reduced-motion: reduce) {
+    .ambient-canvas {
+        display: none;
+    }
+
+    .card,
+    .card__avatar-img {
+        transition: none;
+    }
 }
