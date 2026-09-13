@@ -10,6 +10,12 @@
     box-sizing: border-box; /* 统一盒模型，便于尺寸计算 */
 }
 
+html {
+    width: 100%;
+    min-height: 100%;
+    background: var(--color-bg-bottom);
+}
+
 /* ---------- CSS 变量：集中管理配色，便于后续修改 ----------
    配色围绕头像中的浅蓝、冰蓝、白色展开 */
 :root {
@@ -33,6 +39,7 @@ body {
     font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
     background: linear-gradient(160deg, var(--color-bg-top) 0%, var(--color-bg-bottom) 100%);
     min-height: 100vh;
+    min-height: 100svh;
     overflow-x: hidden;
     position: relative;
 }
@@ -49,11 +56,13 @@ body {
 }
 
 .page {
-    min-height: 100vh;              /* 占满整个视口高度 */
+    width: 100%;
+    min-height: 100vh;              /* 回退：占满整个视口高度 */
+    min-height: 100svh;             /* 使用真实可视区域，避免移动浏览器地址栏造成偏移 */
     display: flex;
     justify-content: center;        /* 水平居中 */
     align-items: center;            /* 垂直居中 */
-    padding: 24px;                  /* 小屏幕下保留边距 */
+    padding: 24px 24px clamp(36px, 8vh, 88px); /* 桌面端略偏上，底部为花瓣保留空间 */
     position: relative;
     z-index: 1;                     /* 内容始终位于装饰花瓣上方 */
 }
@@ -207,6 +216,38 @@ body {
 
 .contact-item__text {
     letter-spacing: 0.5px;
+}
+
+/* 矮屏和移动端压缩纵向留白，确保名片直接出现在首屏 */
+@media (max-height: 620px), (max-width: 480px) {
+    .page {
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .card {
+        width: min(340px, 100%);
+        padding: 26px 24px 24px;
+    }
+
+    .card__avatar {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 16px;
+    }
+
+    .card__name {
+        font-size: 25px;
+        margin-bottom: 5px;
+    }
+
+    .card__divider {
+        margin: 16px auto;
+    }
+
+    .card__contacts {
+        gap: 9px;
+    }
 }
 
 /* 尊重系统的减少动态效果设置，完整禁用装饰动画 */
